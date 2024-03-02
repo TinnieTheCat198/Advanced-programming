@@ -1,24 +1,37 @@
 #include "lab2.hpp"
 
+List_Of_Students::List_Of_Students(int size = 1000){
+    names = new std::string[size];
+    scores = new float[size];    
+}
+
 void List_Of_Students::insert(std::string name, float score){
-    names.push_back(name);
-    scores.push_back(score);
+    *(names+count) = name;
+    *(scores+count) = score;
+    ++count;
 }
 
 void List_Of_Students::bestStudents(){
-    std::vector<int> index;
-    std::vector<float> copy_scores = scores;
-    std::sort(copy_scores.begin(), copy_scores.end(), std::greater<float>());
-    for(int i = 0; i < scores.size(); i++)
-    {
-        if (scores[i] == copy_scores[0])
-            index.push_back(i);
+    float best = bestScores(scores, count);
+    if (best < 0){
+        std::cout << "No students found!\n";
+        return;
     }
 
-    if (index.size())
+    std::cout << "Best students:\n";
+    for(int i = 0; i < count; i++)
     {
-        std::cout << "Best students:\n";
-        for(auto i : index)
+        if (scores[i] == best){
+            std::cout << names[i] << ' ' << scores[i] << '\n';
+        }
+    }
+
+}
+
+void List_Of_Students::display(){
+    if (count)
+    {
+        for(int i = 0; i< count; i++)
         {
             std::cout << names[i] << ' ' << scores[i] << '\n';
         }
@@ -26,14 +39,82 @@ void List_Of_Students::bestStudents(){
     else std::cout << "No students found!\n";
 }
 
-void List_Of_Students::display(){
-    int size = names.size();
-    if (size)
-    {
-        for(int i = 0; i< size; i++)
+List_Of_Students::~List_Of_Students(){
+    delete [] names;
+    delete [] scores;
+}
+
+StudentManagementMenu::StudentManagementMenu(){
+    while(1){
+        std::cout << "--------------------Student Management System--------------------\n" 
+                  << "(1) Add new student\n"
+                  << "(2) Display the list of all students\n"
+                  << "(3) Display the list of all best students\n"
+                  << "(0) Exit the program\n\n"
+                  << "Choose an option: ";
+        int op;
+        std::cin >> op;
+
+        cout << "\n";
+
+        switch(op)
         {
-            std::cout << names[i] << ' ' << scores[i] << '\n';
+        case 1:
+        {
+            std::cout << "(1) Add new student\n"
+                      << "Student's name: ";
+            string Name;
+            cin.ignore();  
+            getline(cin, Name);
+             
+            cout << "Student's score: ";
+            float score;
+            cin >> score;
+
+            addStudent(Name, score);
+            break;
+        }
+        case 2:
+            std::cout << "(2) Display the list of all students\n";
+            display();
+            break;
+        case 3:
+            std::cout << "(3) Display the list of all best students\n";
+            displayBestStudents();
+            break;
+        case 0:
+            std::cout << "Exit the program\n";
+            exit(1);
+            break;
         }
     }
-    else std::cout << "No students found!\n";
+}
+
+void StudentManagementMenu::addStudent(string name, float score){
+    list.insert(name, score);
+}
+
+void StudentManagementMenu::display(){
+    list.display();
+}
+
+void StudentManagementMenu::displayBestStudents(){
+    list.bestStudents();
+}
+
+float bestScores(float *scores, int size){
+    if (size == 0)
+        return -1;
+    float best = scores[0];
+    for(int i = 1; i < size; i++){
+        if (best < *(scores+i))
+            best = *(scores+i);
+    }
+    return best;  
+}
+
+int main(){
+    StudentManagementMenu *menu = new StudentManagementMenu();
+    delete menu;
+    return 0;
 }

@@ -2,15 +2,19 @@
 #define MY_HEADER_H
 
 #include<bits/stdc++.h>
+using namespace std;
 
 class List_Of_Students {
 private:
-    std::vector<std::string> names;
-    std::vector<float> scores;
+    std::string* names;
+    float* scores;
+    int count = 0;
 public:
+    List_Of_Students(int);
     void insert(std::string, float);
     void bestStudents();
     void display();
+    ~List_Of_Students();
 };
 
 class StudentManagementMenu {
@@ -22,5 +26,7 @@ public:
     void display();
     void displayBestStudents();
 };
+
+float bestScores(float *, int);
 
 #endif // MY_HEADER_H
